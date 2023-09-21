@@ -10,23 +10,26 @@ import { getCoinData } from "../functions/getCoinData";
 import { getCoinPrices } from "../functions/getCoinPrices";
 import { settingChartData } from "../functions/settingChartData";
 import List from "../components/Dashboard/List";
+import Footer from "../components/Common/Footer";
+import Header from "../components/Common/Header";
 
 function CoinPage() {
   const { id } = useParams();
   const [coin, setCoin] = useState();
-  const [loading, setLoading] = useState(false);
+  const [loading, setLoading] = useState(true);
   const [days, setDays] = useState(120);
   const [priceType, setPriceType] = useState("prices");
-  const [chartData, setChartData] = useState({
+ /*  const [chartData, setChartData] = useState({
     labels: [],
     datasets: [],
-  });
+  }); */
+  const [chartData,setChartData]=useState({});
 
-  useEffect(() => {
+  /*useEffect(() => {
     getData();
   }, [id]);
 
-  const getData = async () => {
+   const getData = async () => {
     setLoading(true);
     const data = await getCoinData(id);
     if (data) {
@@ -37,9 +40,29 @@ function CoinPage() {
         setLoading(false);
       }
     }
-  };
+  }; */
 
-  const handleDaysChange = async (event) => {
+  useEffect(()=>{
+    if(id){
+        getData();
+    }
+
+},[id]);
+
+async function getData(){
+        const data=await getCoinData(id);
+    if(data){
+        coinObject(setCoin,data);
+        const prices=await getCoinPrices(id,days,priceType)
+        if(prices.length>0){
+            settingChartData(setChartData,prices);
+            setLoading(false);
+        }
+    }
+
+}
+
+  /* const handleDaysChange = async (event) => {
     setLoading(true);
     setDays(event.target.value);
     const prices = await getCoinPrices(id, event.target.value, priceType);
@@ -47,9 +70,9 @@ function CoinPage() {
       settingChartData(setChartData, prices, coin);
       setLoading(false);
     }
-  };
+  }; */
 
-  const handlePriceTypeChange = async (event) => {
+ /*  const handlePriceTypeChange = async (event) => {
     setLoading(true);
     setPriceType(event.target.value);
     const prices = await getCoinPrices(id, days, event.target.value);
@@ -57,11 +80,34 @@ function CoinPage() {
       settingChartData(setChartData, prices, coin);
     }
     setLoading(false);
+  }; */
+
+  const handleDaysChange = async (event) => {
+    setLoading(true);
+    setDays(event.target.value);
+    const prices=await getCoinPrices(id,event.target.value,priceType)
+    if(prices.length>0){
+        settingChartData(setChartData,prices);
+        setLoading(false);
+    }
+    
+  };
+
+  const handlePriceTypeChange =async (event, newType) => {
+    setLoading(true);
+    setPriceType(newType);
+    const prices=await getCoinPrices(id,days,newType)
+    if(prices.length>0){
+        settingChartData(setChartData,prices);
+        setLoading(false);
+    }
+    
   };
 
   return (
     <div>
-      {loading || !coin?.id || !chartData ? (
+        {/*  <Header/> */}
+      {loading ? (
         <Loader />
       ) : (
         <>
@@ -79,7 +125,9 @@ function CoinPage() {
           <CoinInfo name={coin.name} desc={coin.desc} />
         </>
       )}
+       <Footer />
     </div>
+   
   );
 }
 

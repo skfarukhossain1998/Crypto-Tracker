@@ -50,7 +50,7 @@ function  LandingPageComponent() {
           <RWebShare
             data={{
               text: "CryptoTracker, made using React JS.",
-              url: "https://google.com",
+              url: "https://crypto-reactapp-accio.netlify.app/",
               title: "CryptoTracker.",
             }}
             onClick={() => console.log("shared successfully!")}
